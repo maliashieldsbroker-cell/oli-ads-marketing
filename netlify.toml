@@ -1,8 +1,5 @@
-[build]
-  command   = "sh -c 'BASE_PATH=/ pnpm --filter @workspace/oli-ads run build'"
-  publish   = "artifacts/oli-ads/dist/public"
-
 [[redirects]]
   from   = "/*"
   to     = "/index.html"
   status = 200
+
