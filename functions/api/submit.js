@@ -1,5 +1,5 @@
 const APPS_SCRIPT_URL =
-  "https://script.google.com/a/macros/oli-ads.biz/s/AKfycbzLUUW30ZQbsQ_-hLoQcUtX9zCum7YKRbi2CvZ2iPR1rhTSWamJR1Daha2WYA--rl9K/exec";
+  "https://script.google.com/macros/s/AKfycbzLUUW30ZQbsQ_-hLoQcUtX9zCum7YKRbi2CvZ2iPR1rhTSWamJR1Daha2WYA--rl9K/exec";
 
 export async function onRequestPost(context) {
   const { request } = context;
