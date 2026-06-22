@@ -1,52 +1,25 @@
-import { EmailMessage } from "cloudflare:email";
+const APPS_SCRIPT_URL =
+  "https://script.google.com/a/macros/oli-ads.biz/s/AKfycbzLUUW30ZQbsQ_-hLoQcUtX9zCum7YKRbi2CvZ2iPR1rhTSWamJR1Daha2WYA--rl9K/exec";
 
 export async function onRequestPost(context) {
-  const { request, env } = context;
+  const { request } = context;
 
   try {
-    const text = await request.text();
-    const params = new URLSearchParams(text);
-    const formName = params.get("form-name");
+    const body = await request.text();
 
-    let subject, body;
-
-    if (formName === "contact") {
-      const name = params.get("name") || "(no name)";
-      const contact = params.get("contact") || "(no contact)";
-      const message = params.get("message") || "";
-      subject = `[OLI Ads] New contact from ${name}`;
-      body = `Name: ${name}\nEmail / phone: ${contact}${message ? `\n\nMessage:\n${message}` : ""}`;
-    } else if (formName === "vendor") {
-      const name = params.get("name") || "(no name)";
-      const business = params.get("business") || "(no business)";
-      const email = params.get("email") || "(no email)";
-      const trade = params.get("trade") || "(not specified)";
-      subject = `[OLI Ads] Vendor application — ${name}, ${business}`;
-      body = `Name: ${name}\nBusiness: ${business}\nEmail: ${email}\nService category: ${trade}`;
-    } else {
-      return new Response("Bad Request", { status: 400 });
-    }
-
-    const rawEmail = [
-      `MIME-Version: 1.0`,
-      `From: OLI Ads Website <noreply@oli-ads.biz>`,
-      `To: hello@oli-ads.biz`,
-      `Subject: ${subject}`,
-      `Content-Type: text/plain; charset=UTF-8`,
-      ``,
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
-    ].join("\r\n");
+    });
 
-    const message = new EmailMessage(
-      "noreply@oli-ads.biz",
-      "hello@oli-ads.biz",
-      rawEmail
-    );
-    await env.SEND_EMAIL.send(message);
-
-    return new Response("OK", { status: 200 });
+    if (response.ok) {
+      return new Response("OK", { status: 200 });
+    } else {
+      return new Response("Upstream error", { status: 502 });
+    }
   } catch (err) {
-    console.error("Form submission error:", err);
+    console.error("Form relay error:", err);
     return new Response("Internal Server Error", { status: 500 });
   }
 }
